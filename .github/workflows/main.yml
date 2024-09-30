@@ -26,6 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -r requirements.txt  # 安装依赖项
         
     - name: Run Python script
       run: python main.py
@@ -56,9 +57,13 @@ jobs:
           git add history/"${current_datetime}_others_output.txt"
           git commit -m "Archive file with timestamp"
           
+    - name: Pull changes
+      run: git pull origin main || true  # 允许拉取失败
+
     - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    
-        
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
